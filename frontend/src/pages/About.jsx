@@ -103,9 +103,9 @@ export default function About() {
             <div className="space-y-4">
               {[
                 { name: 'Pioneers', desc: 'Key leaders and figures in TCS history with biographies and contributions', count: '6 records' },
-                { name: 'Timeline Events', desc: 'Major events from 1968 to present, categorized by decade and type', count: '25 records' },
+                { name: 'Timeline Events', desc: 'Major events from 1968 to 2025, fact-checked against official sources', count: '27 records' },
                 { name: 'Products', desc: 'TCS platforms and product offerings across industries', count: '8 records' },
-                { name: 'Quotes', desc: 'Inspirational quotes, themes, and statistics', count: '6 records' },
+                { name: 'Quotes', desc: 'Verified quotes, themes, and statistics from official sources', count: '10 records' },
               ].map((col, i) => (
                 <div key={i} className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
                   <div className="w-2 h-2 rounded-full bg-tcs-accent mt-2 flex-shrink-0" />

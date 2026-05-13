@@ -44,10 +44,10 @@ export default function Impact() {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { value: '55+', label: 'Countries', desc: 'Global operations spanning all major markets' },
-                { value: '600K+', label: 'Employees', desc: 'One of the largest private sector employers' },
-                { value: '$28B+', label: 'Annual Revenue', desc: 'Consistent growth year over year' },
-                { value: '40+', label: 'Industries Served', desc: 'Diverse cross-industry expertise' },
+                { value: '46', label: 'Countries', desc: '150 locations spanning all major markets globally' },
+                { value: '607K+', label: 'Employees', desc: 'India\'s largest private sector employer (March 2025)' },
+                { value: '$30B+', label: 'Annual Revenue', desc: 'Crossed $30 billion milestone in FY2025' },
+                { value: '$2.3B', label: 'AI Revenue', desc: 'Annualized AI services revenue (Q4 FY2026)' },
               ].map((stat, i) => (
                 <div key={i} className="card p-6 text-center card-hover">
                   <div className="text-3xl font-bold text-tcs-accent mb-1">{stat.value}</div>
@@ -73,18 +73,19 @@ export default function Impact() {
                   Reskilling & AI-Ready Initiatives
                 </h2>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                  TCS has embarked on one of the world's largest corporate upskilling programs, training 
-                  hundreds of thousands of employees in artificial intelligence, machine learning, cloud computing, 
-                  and other digital skills. This initiative ensures that TCS's workforce remains at the cutting 
-                  edge of technology, ready to deliver next-generation solutions for clients.
+                  TCS has executed one of the world's largest corporate AI upskilling programs, reskilling 
+                  over 300,000 employees in AI, machine learning, and generative AI technologies. With 
+                  607,000+ people on its rolls, TCS aims to have the largest AI-trained workforce in the 
+                  industry. The company's AI services revenue has grown to $2.3 billion annualized, with 
+                  generative and agentic AI revenue tripling year-over-year.
                 </p>
                 <ul className="space-y-3">
                   {[
-                    '150,000+ employees trained in generative AI skills',
-                    'Continuous learning culture with internal certification programs',
-                    'AI-powered tools integrated across service delivery',
-                    'Research collaborations with leading universities worldwide',
-                    'Internal innovation challenges and hackathons'
+                    '300,000+ employees reskilled in AI/ML and Generative AI',
+                    'TCS AI WisdomNext — industry-first GenAI aggregation platform launched',
+                    'AI services revenue crossed $2.3 billion annualized (Q4 FY2026)',
+                    'Partnership with Nvidia for enterprise AI deployment platform',
+                    'Building AI-human workforce with agentic AI capabilities'
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-3 text-gray-600">
                       <span className="w-2 h-2 rounded-full bg-tcs-accent mt-2 flex-shrink-0" />

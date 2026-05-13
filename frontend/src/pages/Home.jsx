@@ -82,7 +82,7 @@ export default function Home() {
               { icon: HiClock, label: 'Founded', value: '1968', color: 'text-blue-600' },
               { icon: HiUserGroup, label: 'Key Pioneers', value: `${stats.pioneers}+`, color: 'text-purple-600' },
               { icon: HiCube, label: 'Products', value: `${stats.products}+`, color: 'text-green-600' },
-              { icon: HiGlobe, label: 'Countries', value: '55+', color: 'text-amber-600' },
+              { icon: HiGlobe, label: 'Countries', value: '46', color: 'text-amber-600' },
             ].map((stat, i) => (
               <div key={i} className="text-center p-4">
                 <stat.icon className={`w-8 h-8 ${stat.color} mx-auto mb-2`} />
@@ -140,8 +140,8 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold text-tcs-blue mb-3">Global IT Services & Products</h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Today TCS operates across 55+ countries with platforms like TCS BaNCS and TCS iON, 
-                  serving thousands of global enterprises in banking, education, and more.
+                  Today TCS operates from 150 locations across 46 countries with 607,000+ employees. Platforms like TCS BaNCS, 
+                  TCS iON, and AI WisdomNext serve enterprises worldwide. Revenue exceeds $30 billion annually.
                 </p>
                 <Link to="/products" className="inline-flex items-center gap-1 text-tcs-accent font-medium mt-4 hover:gap-2 transition-all">
                   See Products <HiArrowRight />
@@ -159,10 +159,10 @@ export default function Home() {
             <div className="relative">
               <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-6xl text-tcs-accent/20 font-serif">"</div>
               <blockquote className="text-2xl md:text-3xl font-display text-tcs-blue leading-relaxed italic pt-8">
-                Software is going to be the means of transforming India.
+                Many years ago, there was an industrial revolution; we missed it. Today there is a new revolution — the information revolution. We cannot afford to miss it.
               </blockquote>
               <cite className="block mt-6 text-lg text-gray-500 not-italic">
-                — F.C. Kohli, Founding CEO of TCS
+                — F.C. Kohli, Founding CEO of TCS (Address to Computer Society of India, 1975)
               </cite>
             </div>
           </div>
