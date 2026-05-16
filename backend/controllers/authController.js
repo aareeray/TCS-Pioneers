@@ -15,14 +15,14 @@ const loginAdmin = async (req, res) => {
       return res.status(400).json({ message: 'Please provide email and password' });
     }
 
-    const admin = await Admin.findOne({ email });
+    const admin = await Admin.findOne({ where: { email } });
 
     if (admin && (await admin.matchPassword(password))) {
       res.json({
-        _id: admin._id,
+        _id: admin.id,
         name: admin.name,
         email: admin.email,
-        token: generateToken(admin._id)
+        token: generateToken(admin.id)
       });
     } else {
       res.status(401).json({ message: 'Invalid email or password' });
@@ -36,7 +36,9 @@ const loginAdmin = async (req, res) => {
 // @route   GET /api/admin/profile
 const getProfile = async (req, res) => {
   try {
-    const admin = await Admin.findById(req.admin._id).select('-password');
+    const admin = await Admin.findByPk(req.admin.id, {
+      attributes: { exclude: ['password'] }
+    });
     res.json(admin);
   } catch (error) {
     res.status(500).json({ message: error.message });

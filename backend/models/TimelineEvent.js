@@ -1,45 +1,47 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
 
-const timelineEventSchema = new mongoose.Schema({
+const TimelineEvent = sequelize.define('TimelineEvent', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
   year: {
-    type: Number,
-    required: [true, 'Year is required']
+    type: DataTypes.INTEGER,
+    allowNull: false
   },
   title: {
-    type: String,
-    required: [true, 'Title is required'],
-    trim: true
+    type: DataTypes.STRING,
+    allowNull: false
   },
   description: {
-    type: String,
-    required: [true, 'Description is required']
+    type: DataTypes.TEXT,
+    allowNull: false
   },
   category: {
-    type: String,
-    required: [true, 'Category is required'],
-    enum: ['History', 'Technology', 'Business', 'Awards', 'Products']
+    type: DataTypes.ENUM('History', 'Technology', 'Business', 'Awards', 'Products'),
+    allowNull: false
   },
   decadeGroup: {
-    type: String,
-    required: [true, 'Decade group is required']
+    type: DataTypes.STRING,
+    allowNull: false
   },
-  relatedPioneerIds: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Pioneer'
-  }],
-  relatedProductIds: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product'
-  }],
+  // Store related IDs as JSONB arrays (integers)
+  relatedPioneerIds: {
+    type: DataTypes.JSONB,
+    defaultValue: []
+  },
+  relatedProductIds: {
+    type: DataTypes.JSONB,
+    defaultValue: []
+  },
   importanceLevel: {
-    type: String,
-    enum: ['major', 'minor', 'milestone'],
-    default: 'minor'
+    type: DataTypes.ENUM('major', 'minor', 'milestone'),
+    defaultValue: 'minor'
   }
 }, {
   timestamps: true
 });
 
-timelineEventSchema.index({ title: 'text', description: 'text' });
-
-module.exports = mongoose.model('TimelineEvent', timelineEventSchema);
+module.exports = TimelineEvent;

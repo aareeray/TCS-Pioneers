@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const Pioneer = require('../models/Pioneer');
 
 // @desc    Get all pioneers
@@ -5,17 +6,25 @@ const Pioneer = require('../models/Pioneer');
 const getPioneers = async (req, res) => {
   try {
     const { tag, search } = req.query;
-    let query = {};
+    const where = {};
 
     if (tag) {
-      query.tags = { $in: [tag] };
+      // JSONB array contains tag
+      where.tags = { [Op.contains]: [tag] };
     }
 
     if (search) {
-      query.$text = { $search: search };
+      where[Op.or] = [
+        { name: { [Op.iLike]: `%${search}%` } },
+        { roleTitle: { [Op.iLike]: `%${search}%` } },
+        { shortBio: { [Op.iLike]: `%${search}%` } }
+      ];
     }
 
-    const pioneers = await Pioneer.find(query).sort({ priority: -1 });
+    const pioneers = await Pioneer.findAll({
+      where,
+      order: [['priority', 'DESC']]
+    });
     res.json(pioneers);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -26,7 +35,7 @@ const getPioneers = async (req, res) => {
 // @route   GET /api/pioneers/:id
 const getPioneerById = async (req, res) => {
   try {
-    const pioneer = await Pioneer.findById(req.params.id);
+    const pioneer = await Pioneer.findByPk(req.params.id);
     if (!pioneer) {
       return res.status(404).json({ message: 'Pioneer not found' });
     }
@@ -51,13 +60,11 @@ const createPioneer = async (req, res) => {
 // @route   PUT /api/pioneers/:id
 const updatePioneer = async (req, res) => {
   try {
-    const pioneer = await Pioneer.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true
-    });
+    const pioneer = await Pioneer.findByPk(req.params.id);
     if (!pioneer) {
       return res.status(404).json({ message: 'Pioneer not found' });
     }
+    await pioneer.update(req.body);
     res.json(pioneer);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -68,10 +75,11 @@ const updatePioneer = async (req, res) => {
 // @route   DELETE /api/pioneers/:id
 const deletePioneer = async (req, res) => {
   try {
-    const pioneer = await Pioneer.findByIdAndDelete(req.params.id);
+    const pioneer = await Pioneer.findByPk(req.params.id);
     if (!pioneer) {
       return res.status(404).json({ message: 'Pioneer not found' });
     }
+    await pioneer.destroy();
     res.json({ message: 'Pioneer removed' });
   } catch (error) {
     res.status(500).json({ message: error.message });

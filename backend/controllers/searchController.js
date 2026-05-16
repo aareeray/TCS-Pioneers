@@ -1,8 +1,9 @@
+const { Op } = require('sequelize');
 const Pioneer = require('../models/Pioneer');
 const TimelineEvent = require('../models/TimelineEvent');
 const Product = require('../models/Product');
 
-// @desc    Global search across all collections
+// @desc    Global search across all tables
 // @route   GET /api/search?q=query
 const globalSearch = async (req, res) => {
   try {
@@ -12,31 +13,39 @@ const globalSearch = async (req, res) => {
       return res.status(400).json({ message: 'Search query is required' });
     }
 
-    const searchRegex = new RegExp(q, 'i');
+    const term = `%${q}%`;
 
     const [pioneers, events, products] = await Promise.all([
-      Pioneer.find({
-        $or: [
-          { name: searchRegex },
-          { roleTitle: searchRegex },
-          { shortBio: searchRegex },
-          { tags: searchRegex }
-        ]
-      }).limit(10),
-      TimelineEvent.find({
-        $or: [
-          { title: searchRegex },
-          { description: searchRegex },
-          { category: searchRegex }
-        ]
-      }).limit(10),
-      Product.find({
-        $or: [
-          { name: searchRegex },
-          { domain: searchRegex },
-          { description: searchRegex }
-        ]
-      }).limit(10)
+      Pioneer.findAll({
+        where: {
+          [Op.or]: [
+            { name: { [Op.iLike]: term } },
+            { roleTitle: { [Op.iLike]: term } },
+            { shortBio: { [Op.iLike]: term } }
+          ]
+        },
+        limit: 10
+      }),
+      TimelineEvent.findAll({
+        where: {
+          [Op.or]: [
+            { title: { [Op.iLike]: term } },
+            { description: { [Op.iLike]: term } },
+            { category: { [Op.iLike]: term } }
+          ]
+        },
+        limit: 10
+      }),
+      Product.findAll({
+        where: {
+          [Op.or]: [
+            { name: { [Op.iLike]: term } },
+            { domain: { [Op.iLike]: term } },
+            { description: { [Op.iLike]: term } }
+          ]
+        },
+        limit: 10
+      })
     ]);
 
     res.json({

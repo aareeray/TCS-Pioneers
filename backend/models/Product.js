@@ -1,40 +1,42 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
 
-const productSchema = new mongoose.Schema({
+const Product = sequelize.define('Product', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
   name: {
-    type: String,
-    required: [true, 'Product name is required'],
-    trim: true
+    type: DataTypes.STRING,
+    allowNull: false
   },
   domain: {
-    type: String,
-    required: [true, 'Domain is required'],
-    trim: true
+    type: DataTypes.STRING,
+    allowNull: false
   },
   launchPeriod: {
-    type: String,
-    required: [true, 'Launch period is required']
+    type: DataTypes.STRING,
+    allowNull: false
   },
   description: {
-    type: String,
-    required: [true, 'Description is required']
+    type: DataTypes.TEXT,
+    allowNull: false
   },
   impactHighlights: {
-    type: [String],
-    default: []
+    type: DataTypes.JSONB,
+    defaultValue: []
   },
   officialUrl: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: ''
   },
   featured: {
-    type: Boolean,
-    default: false
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   }
 }, {
   timestamps: true
 });
 
-productSchema.index({ name: 'text', description: 'text', domain: 'text' });
-
-module.exports = mongoose.model('Product', productSchema);
+module.exports = Product;
