@@ -1,36 +1,45 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
 const bcrypt = require('bcryptjs');
+const { sequelize } = require('../config/db');
 
-const adminSchema = new mongoose.Schema({
+const Admin = sequelize.define('Admin', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
   email: {
-    type: String,
-    required: [true, 'Email is required'],
+    type: DataTypes.STRING,
+    allowNull: false,
     unique: true,
-    lowercase: true,
-    trim: true
+    validate: { isEmail: true }
   },
   password: {
-    type: String,
-    required: [true, 'Password is required'],
-    minlength: 6
+    type: DataTypes.STRING,
+    allowNull: false
   },
   name: {
-    type: String,
-    default: 'Admin'
+    type: DataTypes.STRING,
+    defaultValue: 'Admin'
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  hooks: {
+    beforeCreate: async (admin) => {
+      const salt = await bcrypt.genSalt(10);
+      admin.password = await bcrypt.hash(admin.password, salt);
+    },
+    beforeUpdate: async (admin) => {
+      if (admin.changed('password')) {
+        const salt = await bcrypt.genSalt(10);
+        admin.password = await bcrypt.hash(admin.password, salt);
+      }
+    }
+  }
 });
 
-adminSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
-
-adminSchema.methods.matchPassword = async function(enteredPassword) {
+Admin.prototype.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-module.exports = mongoose.model('Admin', adminSchema);
+module.exports = Admin;

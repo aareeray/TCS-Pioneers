@@ -1,29 +1,62 @@
+const { Op } = require('sequelize');
 const TimelineEvent = require('../models/TimelineEvent');
+const Pioneer = require('../models/Pioneer');
+const Product = require('../models/Product');
+
+// Helper: enrich timeline events with related pioneer/product data
+const enrichEvents = async (events) => {
+  return await Promise.all(
+    events.map(async (event) => {
+      const plain = event.toJSON();
+
+      const relatedPioneers = plain.relatedPioneerIds && plain.relatedPioneerIds.length > 0
+        ? await Pioneer.findAll({
+            where: { id: plain.relatedPioneerIds },
+            attributes: ['id', 'name', 'roleTitle']
+          })
+        : [];
+
+      const relatedProducts = plain.relatedProductIds && plain.relatedProductIds.length > 0
+        ? await Product.findAll({
+            where: { id: plain.relatedProductIds },
+            attributes: ['id', 'name', 'domain']
+          })
+        : [];
+
+      return { ...plain, relatedPioneers, relatedProducts };
+    })
+  );
+};
 
 // @desc    Get all timeline events
 // @route   GET /api/timelineEvents
 const getTimelineEvents = async (req, res) => {
   try {
     const { decade, category, search } = req.query;
-    let query = {};
+    const where = {};
 
     if (decade) {
-      query.decadeGroup = decade;
+      where.decadeGroup = decade;
     }
 
     if (category) {
-      query.category = category;
+      where.category = category;
     }
 
     if (search) {
-      query.$text = { $search: search };
+      where[Op.or] = [
+        { title: { [Op.iLike]: `%${search}%` } },
+        { description: { [Op.iLike]: `%${search}%` } }
+      ];
     }
 
-    const events = await TimelineEvent.find(query)
-      .populate('relatedPioneerIds', 'name roleTitle')
-      .populate('relatedProductIds', 'name domain')
-      .sort({ year: 1 });
-    res.json(events);
+    const events = await TimelineEvent.findAll({
+      where,
+      order: [['year', 'ASC']]
+    });
+
+    const enriched = await enrichEvents(events);
+    res.json(enriched);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -33,13 +66,12 @@ const getTimelineEvents = async (req, res) => {
 // @route   GET /api/timelineEvents/:id
 const getTimelineEventById = async (req, res) => {
   try {
-    const event = await TimelineEvent.findById(req.params.id)
-      .populate('relatedPioneerIds', 'name roleTitle')
-      .populate('relatedProductIds', 'name domain');
+    const event = await TimelineEvent.findByPk(req.params.id);
     if (!event) {
       return res.status(404).json({ message: 'Timeline event not found' });
     }
-    res.json(event);
+    const enriched = await enrichEvents([event]);
+    res.json(enriched[0]);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -60,13 +92,11 @@ const createTimelineEvent = async (req, res) => {
 // @route   PUT /api/timelineEvents/:id
 const updateTimelineEvent = async (req, res) => {
   try {
-    const event = await TimelineEvent.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true
-    });
+    const event = await TimelineEvent.findByPk(req.params.id);
     if (!event) {
       return res.status(404).json({ message: 'Timeline event not found' });
     }
+    await event.update(req.body);
     res.json(event);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -77,10 +107,11 @@ const updateTimelineEvent = async (req, res) => {
 // @route   DELETE /api/timelineEvents/:id
 const deleteTimelineEvent = async (req, res) => {
   try {
-    const event = await TimelineEvent.findByIdAndDelete(req.params.id);
+    const event = await TimelineEvent.findByPk(req.params.id);
     if (!event) {
       return res.status(404).json({ message: 'Timeline event not found' });
     }
+    await event.destroy();
     res.json({ message: 'Timeline event removed' });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -1,45 +1,46 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
 
-const pioneerSchema = new mongoose.Schema({
+const Pioneer = sequelize.define('Pioneer', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
   name: {
-    type: String,
-    required: [true, 'Name is required'],
-    trim: true
+    type: DataTypes.STRING,
+    allowNull: false
   },
   roleTitle: {
-    type: String,
-    required: [true, 'Role title is required'],
-    trim: true
+    type: DataTypes.STRING,
+    allowNull: false
   },
   activeYears: {
-    type: String,
-    required: [true, 'Active years is required'],
-    trim: true
+    type: DataTypes.STRING,
+    allowNull: false
   },
   shortBio: {
-    type: String,
-    required: [true, 'Short bio is required']
+    type: DataTypes.TEXT,
+    allowNull: false
   },
   keyContributions: {
-    type: [String],
-    default: []
+    type: DataTypes.JSONB,
+    defaultValue: []
   },
   portraitImageUrl: {
-    type: String,
-    default: ''
+    type: DataTypes.STRING,
+    defaultValue: ''
   },
   tags: {
-    type: [String],
-    default: []
+    type: DataTypes.JSONB,
+    defaultValue: []
   },
   priority: {
-    type: Number,
-    default: 0
+    type: DataTypes.INTEGER,
+    defaultValue: 0
   }
 }, {
   timestamps: true
 });
 
-pioneerSchema.index({ name: 'text', shortBio: 'text', roleTitle: 'text' });
-
-module.exports = mongoose.model('Pioneer', pioneerSchema);
+module.exports = Pioneer;
